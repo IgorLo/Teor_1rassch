@@ -6,6 +6,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class EntropyInfoCalculator {
@@ -102,39 +104,60 @@ public class EntropyInfoCalculator {
     }
 
     private void printLongLogicReport() {
-        PrintWriter writer = null;
+        BufferedWriter writer = null;
         try {
-            writer = new PrintWriter(new FileOutputStream(new File(path + "H&I_Отчёт.txt")));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path + "H&I_Отчёт.txt"), Charset.forName("UTF-8")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        writer.write("-------------------------\n");
-        writer.write("Отчёт по вычислению H и I\n");
-        writer.write("-------------------------\n");
-        writer.write("Условная энтропия:   " + entropy[0] + "\n");
-        writer.write("Условная информация: " + information[0] + "\n");
-        writer.write("Средняя энтропия:    " + midEntropy + "\n");
-        writer.write("Средняя информация:  " + midInformation + "\n");
-        writer.write("-------------------------");
-        writer.flush();
-        writer.close();
+        try {
+            writer.write("-------------------------\n");
+            writer.newLine();
+            writer.write("Отчёт по вычислению H и I\n");
+            writer.newLine();
+            writer.write("-------------------------\n");
+            writer.newLine();
+            writer.write("Условная энтропия:   " + entropy[0] + "\n");
+            writer.newLine();
+            writer.write("Условная информация: " + information[0] + "\n");
+            writer.newLine();
+            writer.write("Средняя энтропия:    " + midEntropy + "\n");
+            writer.newLine();
+            writer.write("Средняя информация:  " + midInformation + "\n");
+            writer.newLine();
+            writer.write("-------------------------");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void printSmallReport() {
-        PrintWriter writer = null;
+        BufferedWriter writer = null;
         try {
-            writer = new PrintWriter(new FileOutputStream(new File(path + "H&I_Отчёт.txt")));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path + "H&I_Отчёт.txt"), Charset.forName("UTF-8")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        writer.write("-------------------------\n");
-        writer.write("Отчёт по вычислению H и I\n");
-        writer.write("-------------------------\n");
-        writer.write("Средняя энтропия:    " + midEntropy + "\n");
-        writer.write("Средняя информация:  " + midInformation + "\n");
-        writer.write("-------------------------");
-        writer.flush();
-        writer.close();
+        try {
+            writer.write("-------------------------\n");
+            writer.newLine();
+            writer.write("Отчёт по вычислению H и I\n");
+            writer.newLine();
+            writer.write("-------------------------\n");
+            writer.newLine();
+            writer.write("Средняя энтропия:    " + midEntropy + "\n");
+            writer.newLine();
+            writer.write("Средняя информация:  " + midInformation + "\n");
+            writer.newLine();
+            writer.write("-------------------------");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void buildReport() {

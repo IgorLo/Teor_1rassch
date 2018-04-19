@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class First {
@@ -7,8 +9,12 @@ public class First {
 
         long startTime = System.currentTimeMillis();
 
-        StringBuilder totalReport = new StringBuilder();
-
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Report/total/totalReport.txt")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         SortedMap<String, String> trueAlphabet = loadAlphabet(true);
 
 
@@ -22,15 +28,31 @@ public class First {
         int printPossInfo = Integer.parseInt(settings[3]);
         int printEntroInfo = Integer.parseInt(settings[4]);
 
-        totalReport.append(
-                "Количество cлов:     " + settings[0] + "\n").append(
-                "Количество посланий: " + settings[1] + "\n").append(
-                "Шум (Q):             " + settings[2] + "\n\n").append(
-                "Графики напечатаны для " + settings[3] + " символа." + "\n").append(
-                "Энтропия и Информация пощитаны для " + settings[4] + " символа." + "\n(Нумерация с нулевого)\n"
-        );
+        try {
+            writer.write("Количество cлов:     " + settings[0]);
+            writer.newLine();
+            writer.write("Количество посланий: " + settings[1]);
+            writer.newLine();
+            writer.write("Шум (Q):             " + settings[2]);
+            writer.newLine();
+            writer.write("Графики напечатаны для " + settings[3] + " символа.");
+            writer.newLine();
+            writer.write("Энтропия и Информация пощитаны для " + settings[4] + " символа.");
+            writer.newLine();
+            writer.write("(Нумерация с нулевого)");
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        totalReport.append("\n~~~ Расшифрованные послания ~~~\n");
+        try {
+            writer.newLine();
+            writer.write("~~~ Расшифрованные послания ~~~");
+            writer.newLine();
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         List<String[]> multiMessage = loadMessages(Integer.parseInt(settings[0]), Integer.parseInt(settings[1]));
 
@@ -76,9 +98,15 @@ public class First {
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("РАСШИФРОВАНОЕ ПОСЛАНИЕ:");
-        totalReport.append(
-                "\nПункт 1 с равными вероятностями:\n" + realWord1.toString() + "\n"
-        );
+        try {
+            writer.write("Пункт 1 с равными вероятностями:");
+            writer.newLine();
+            String buffer = realWord1.toString();
+            writer.write(buffer.trim());
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(realWord1.toString());
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
 
@@ -124,9 +152,14 @@ public class First {
         System.out.println();
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("РАСШИФРОВАНОЕ ПОСЛАНИЕ:");
-        totalReport.append(
-                "\nПункт 1 с учётом частот русских букв:\n" + realWord1.toString() + "\n"
-        );
+        try {
+            writer.write("Пункт 1 с учётом частот русских букв:");
+            writer.newLine();
+            writer.write(realWord1.toString());
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(realWord1.toString());
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
         //System.out.println();
@@ -188,9 +221,15 @@ public class First {
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("РАСШИФРОВАНОЕ ПОСЛАНИЕ:");
-        totalReport.append(
-                "\nПункт 2 с равными вероятностями:\n" + longRealWord1.toString() + "\n"
-        );
+        try {
+            writer.newLine();
+            writer.write("Пункт 2 с равными вероятностями:");
+            writer.newLine();
+            writer.write(longRealWord1.toString());
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(longRealWord1.toString());
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
 
@@ -232,31 +271,32 @@ public class First {
         //System.out.println();
         //System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("РАСШИФРОВАНОЕ ПОСЛАНИЕ:");
-        totalReport.append(
-                "\nПункт 2 с учётом частот русских букв:\n" + longRealWord1.toString() + "\n"
-        );
+        try {
+            writer.write("Пункт 2 с учётом частот русских букв:");
+            writer.newLine();
+            writer.write(longRealWord1.toString());
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(longRealWord1.toString());
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
         //System.out.println();
 
-        totalReport.append("\n~~~~~~~~~\n");
-        totalReport.append("Времени на работу потрачено: " + (System.currentTimeMillis() - startTime) + " мс.\n" +
-                "\nНе забудте поблагодарить Игоря");
-
-        saveTotalReport(totalReport);
-
-    }
-
-    private static void saveTotalReport(StringBuilder totalReport) {
-        PrintWriter writer = null;
         try {
-            writer = new PrintWriter(new FileOutputStream(new File("Report/total/totalReport.txt")));
-        } catch (FileNotFoundException e) {
+            writer.newLine();
+            writer.write("~~~~~~~~~~");
+            writer.newLine();
+            writer.write("Времени на работу потрачено: " + (System.currentTimeMillis() - startTime) + " мс.");
+            writer.newLine();
+            writer.write("Не забудте поблагодарить Игоря");
+            writer.newLine();
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        writer.write(totalReport.toString());
-        writer.flush();
-        writer.close();
+
     }
 
     private static double[] calculateRussianPoss(String[] codedAlphabet,
@@ -293,7 +333,7 @@ public class First {
         BufferedReader reader;
 
         try {
-            reader = new BufferedReader(new FileReader("resources/russianPossibilities.txt"));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream("resources/russianPossibilities.txt")));
             String line = reader.readLine();
             while (line != null){
                 String[] args = line.split("\t");
@@ -311,12 +351,15 @@ public class First {
     private static String[] loadSettings() {
 
         BufferedReader reader;
-        String[] settings = null;
+        String[] settings = new String[5];
 
         try {
-            reader = new BufferedReader(new FileReader("resources/settings.txt"));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream("resources/settings.txt")));
             String line = reader.readLine();
-            settings = line.split(" ");
+            String[] buffer = line.split(" ");
+            for (int i = 0; i < buffer.length; i++) {
+                settings[i] = buffer[i];
+            }
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -336,7 +379,7 @@ public class First {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("resources/messages.txt"));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream("resources/messages.txt")));
             String line = reader.readLine();
             for (int i = 0; i < numberOfMessages; i++){
                 String[] words = line.split(" ");

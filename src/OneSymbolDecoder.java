@@ -1,3 +1,13 @@
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import java.io.File;
+import java.io.IOException;
+
 public class OneSymbolDecoder {
 
     String[] alphabet;
@@ -36,15 +46,64 @@ public class OneSymbolDecoder {
         aposteriorPoss = null;
     }
 
-    public String decodeWord(){
+    public String decodeWord(boolean print, boolean longLogic){
 
+        if (print)
+            printArrayOfPoss(aprioriPoss, "Априорные 0", longLogic);
+
+        int counter = 1;
         for (String word: words) {
+            //if (print)
+                //System.out.println("Номер посылки: " + counter);
             aposteriorPoss = new double[aprioriPoss.length];
             calculateAposterior(word);
+            if (print){
+                printArrayOfPoss(aposteriorPoss, "Апостериорные вероятности " + counter, longLogic);
+            }
             aprioriPoss = aposteriorPoss;
+            counter++;
         }
 
-        return mostPossibleWord();
+        return mostPossibleWord(print);
+    }
+
+    private void printArrayOfPoss(double[] array, String name, boolean longLogic) {
+
+        XYSeries series = new XYSeries(name);
+        for (int i = 0; i < alphabet.length; i++) {
+            series.add(i, Math.pow(array[i], 1/25.0));
+            //series.add(i, array[i]);
+        }
+        XYSeriesCollection dataset = new XYSeriesCollection(series);
+        JFreeChart chart = ChartFactory.createXYBarChart(
+                "(Вероятности)^(1/25)",
+                "Слова",
+                false,
+                "Вероятность",
+                dataset,
+                PlotOrientation.VERTICAL,
+                false, false, false);
+
+        String path = "";
+
+        if (longLogic){
+            path += "Report/2.";
+        } else {
+            path += "Report/1.";
+        }
+
+        if (basePossibilities == null){
+            path += "1_default/";
+        } else {
+            path += "1_russian/";
+        }
+
+        try {
+            ChartUtilities.saveChartAsPNG(new File(path + name + ".png"), chart, 1000, 800);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void calculateAposterior(String word) {
@@ -73,7 +132,7 @@ public class OneSymbolDecoder {
         return realistic;
     }
 
-    private String mostPossibleWord() {
+    private String mostPossibleWord(boolean print) {
         double maxPoss = 0.0;
         int indexOfMax = 0;
         for (int i = 0; i < aprioriPoss.length; i++){
@@ -83,6 +142,8 @@ public class OneSymbolDecoder {
             }
         }
         aprioriPoss = null;
+        //if (print)
+            //System.out.println("НАИБОЛЕЕ ВЕРОЯТНЫЙ СИМВОЛ: " + alphabet[indexOfMax]);
         return alphabet[indexOfMax];
     }
 

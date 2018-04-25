@@ -76,10 +76,10 @@ public class OneSymbolDecoder {
         }
         XYSeriesCollection dataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory.createXYBarChart(
-                "(Вероятности)^(1/25)",
+                name,
                 "Слова",
                 false,
-                "Вероятность",
+                "Вероятность^(1/25)",
                 dataset,
                 PlotOrientation.VERTICAL,
                 false, false, false);
